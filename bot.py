@@ -39,7 +39,7 @@ def _get(scope: str, cid: str):
     return c["payload"] if c else None
 
 
-@app.get("/v1/healthz")
+@app.api_route("/v1/healthz", methods=["GET", "HEAD"])  # HEAD: uptime monitors probe with it
 def healthz():
     counts = {"category": 0, "merchant": 0, "customer": 0, "trigger": 0}
     with LOCK:
