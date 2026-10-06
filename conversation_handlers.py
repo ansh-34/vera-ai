@@ -52,7 +52,7 @@ def is_auto_reply(msg: str, state: dict) -> bool:
 
 
 def _hindi(text: str) -> bool:
-    return bool(re.search(r"\b(hai|haan|kar|karo|nahi|aap|mujhe|kya|bhai|ji|kal|abhi|chahiye|bhej|dena|do)\b", text, re.I))
+    return bool(re.search(r"\b(hai|haan|kar|karo|nahi|aap|mujhe|kya|bhai|ji|kal|abhi|chahiye|bhej|dena)\b", text, re.I))
 
 
 def _history(state, n=6):
@@ -107,13 +107,14 @@ def _llm_reply(state: dict, msg: str, mode: str) -> dict | None:
 
 def _action_fallback(state, msg):
     trig = state.get("trigger") or {}
-    kind = trig.get("kind", "request")
+    kind = trig.get("kind")
+    topic = f" for {kind.replace('_', ' ')}" if kind else ""
     name = (state.get("merchant", {}).get("identity", {}) or {}).get("owner_first_name", "")
     hi = _hindi(msg)
     if hi:
-        body = f"Done {name} — abhi draft taiyaar kar rahi hoon ({kind.replace('_', ' ')}). Next: draft aapko 5 min mein bhejti hoon; Reply CONFIRM to proceed."
+        body = f"Done {name} — draft{topic} abhi bana rahi hoon aur 5 min mein bhejti hoon. Next step: aapka approval. Reply CONFIRM to go live."
     else:
-        body = f"Great {name} — on it now. Sending you the draft for {kind.replace('_', ' ')} in a few minutes; next step is your approval. Reply CONFIRM to go live."
+        body = f"Done {name} — I'm putting the draft{topic} together now and will send it here in a few minutes. Next step is your approval: reply CONFIRM to go live."
     return {"action": "send", "body": body.replace("  ", " "), "cta": "binary_yes_no",
             "rationale": "Merchant committed; switched to action mode without further qualification."}
 
