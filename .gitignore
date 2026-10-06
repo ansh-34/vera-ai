@@ -1,0 +1,6 @@
+.env
+__pycache__/
+*.pyc
+magicpin-vera-ai-main/
+server.log
+nohup.out
